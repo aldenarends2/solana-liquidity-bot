@@ -12,5 +12,12 @@
         "id":  "4fdb6d48-becf-4634-b7ba-7a89c48df111",
         "repo":  "solana-liquidity-bot",
         "ts":  "2025-10-24T15:52:33.4032993Z"
+    },
+    {
+        "summary":  "Manual QA heartbeat",
+        "status":  "ok",
+        "id":  "447f5268-40ac-4538-a034-e804580f6f4f",
+        "repo":  "solana-liquidity-bot",
+        "ts":  "2025-10-24T18:05:34.4734126Z"
     }
 ]
