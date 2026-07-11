@@ -1,23 +1,9 @@
-[
-    {
-        "summary":  "Automated QA heartbeat",
-        "status":  "ok",
-        "id":  "4ded45ab-e62f-49b4-8774-657522e416f8",
-        "repo":  "solana-liquidity-bot",
-        "ts":  "2025-10-24T15:51:16.3460113Z"
-    },
-    {
-        "summary":  "Automated QA heartbeat",
-        "status":  "ok",
-        "id":  "4fdb6d48-becf-4634-b7ba-7a89c48df111",
-        "repo":  "solana-liquidity-bot",
-        "ts":  "2025-10-24T15:52:33.4032993Z"
-    },
-    {
-        "summary":  "Manual QA heartbeat",
-        "status":  "ok",
-        "id":  "447f5268-40ac-4538-a034-e804580f6f4f",
-        "repo":  "solana-liquidity-bot",
-        "ts":  "2025-10-24T18:05:34.4734126Z"
-    }
-]
+{
+  "repository": "solana-liquidity-bot",
+  "status": "legacy-disabled",
+  "authoritative": false,
+  "live_system": false,
+  "workflow_enabled": false,
+  "message": "Historical QA heartbeat data retired. This file is not evidence of current Axiom, provider, wallet, strategy, trading, liquidation, or production health.",
+  "retired_at": "2026-07-11T21:15:00Z"
+}
