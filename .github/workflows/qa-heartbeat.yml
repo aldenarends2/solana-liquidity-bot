@@ -1,19 +1,19 @@
-name: QA Heartbeat
+name: Legacy QA Snapshot (Manual)
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [qa_heartbeat]
 
 permissions:
   contents: write
-  actions: read
-  pages: write
-  id-token: write
+
+concurrency:
+  group: legacy-qa-snapshot-${{ github.repository }}
+  cancel-in-progress: true
 
 jobs:
   update-qa-feed:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,19 +25,15 @@ jobs:
           git config user.name "qa-automation-bot"
           git config user.email "qa-automation@users.noreply.github.com"
 
-      - name: Generate QA results
+      - name: Generate legacy QA snapshot
+        shell: bash
         run: |
-          echo "Verbose logging enabled"
-          echo "Using token: present"
-          
-          # Create QA results JSON with token proof and timestamp
+          set -euo pipefail
           mkdir -p qa-temp
           cat > qa-temp/qa-results.json << EOF
           {
             "repository": "solana-liquidity-bot",
-            "token_used": "present",
-            "status": "success",
-            "put_status": "201 Created",
+            "status": "legacy-manual-snapshot",
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "sha": "$(git rev-parse HEAD)",
             "workflow_run": "${{ github.run_id }}",
@@ -45,41 +41,31 @@ jobs:
             "feed_updated": true
           }
           EOF
-          
-          echo "PUT status: 201 Created"
-          echo "New SHA: $(git rev-parse HEAD)"
 
       - name: Switch to gh-pages branch
+        shell: bash
         run: |
-          # Create or switch to gh-pages branch
+          set -euo pipefail
           if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
             git checkout gh-pages
-            git pull origin gh-pages
+            git pull --ff-only origin gh-pages
           else
             git checkout --orphan gh-pages
             git rm -rf .
-            echo "# QA Results" > README.md
+            echo "# Legacy QA Results" > README.md
             git add README.md
             git commit -m "Initialize gh-pages branch"
           fi
 
-      - name: Update QA feed
+      - name: Update legacy QA feed
+        shell: bash
         run: |
-          # Copy QA results to gh-pages
+          set -euo pipefail
           cp qa-temp/qa-results.json qa-results.json
-          
-          # Add and commit
           git add qa-results.json
-          git commit -m "Update QA feed - $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)"
-
-      - name: Push to gh-pages
-        run: |
-          git push origin gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Verify Pages deployment
-        run: |
-          echo "QA feed updated successfully"
-          echo "Pages URL: https://aldenarends2.github.io/solana-liquidity-bot/qa-results.json"
-          echo "Heartbeat timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if git diff --cached --quiet; then
+            echo "No QA feed change to commit."
+          else
+            git commit -m "Update legacy QA snapshot - $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)"
+            git push origin gh-pages
+          fi
