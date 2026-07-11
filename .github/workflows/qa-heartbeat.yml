@@ -1,71 +1,15 @@
-name: Legacy QA Snapshot (Manual)
+name: Legacy workflow disabled — QA Heartbeat
 
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-
-concurrency:
-  group: legacy-qa-snapshot-${{ github.repository }}
-  cancel-in-progress: true
+permissions: {}
 
 jobs:
-  update-qa-feed:
+  disabled:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure Git
+      - name: Disabled legacy workflow
         run: |
-          git config user.name "qa-automation-bot"
-          git config user.email "qa-automation@users.noreply.github.com"
-
-      - name: Generate legacy QA snapshot
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p qa-temp
-          cat > qa-temp/qa-results.json << EOF
-          {
-            "repository": "solana-liquidity-bot",
-            "status": "legacy-manual-snapshot",
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "sha": "$(git rev-parse HEAD)",
-            "workflow_run": "${{ github.run_id }}",
-            "heartbeat_verified": true,
-            "feed_updated": true
-          }
-          EOF
-
-      - name: Switch to gh-pages branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
-            git checkout gh-pages
-            git pull --ff-only origin gh-pages
-          else
-            git checkout --orphan gh-pages
-            git rm -rf .
-            echo "# Legacy QA Results" > README.md
-            git add README.md
-            git commit -m "Initialize gh-pages branch"
-          fi
-
-      - name: Update legacy QA feed
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp qa-temp/qa-results.json qa-results.json
-          git add qa-results.json
-          if git diff --cached --quiet; then
-            echo "No QA feed change to commit."
-          else
-            git commit -m "Update legacy QA snapshot - $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)"
-            git push origin gh-pages
-          fi
+          echo "This historical QA heartbeat is intentionally disabled."
+          echo "No repository write, Pages update, external dispatch, token use, or current Axiom health claim is authorised from this legacy repository."
